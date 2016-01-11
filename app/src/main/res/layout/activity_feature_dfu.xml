@@ -216,6 +216,15 @@
 					android:onClick="onUploadClicked"
 					android:text="@string/dfu_action_upload"/>
 
+				<Button
+					android:id="@+id/action_auto_upload"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_margin="@dimen/feature_section_padding"
+					android:enabled="true"
+					android:onClick="onAutoUploadClicked"
+					android:text="@string/dfu_action_auto_upload"/>
+
 				<no.nordicsemi.android.nrftoolbox.widget.TrebuchetTextView
 					android:id="@+id/textviewUploading"
 					android:layout_width="wrap_content"

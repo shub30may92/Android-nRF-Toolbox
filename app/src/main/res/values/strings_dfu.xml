@@ -65,6 +65,7 @@
 	
 	<string name="dfu_section_dfu_header">DEVICE FIRMWARE UPDATE</string>
 	<string name="dfu_action_upload">UPLOAD</string>
+	<string name="dfu_action_auto_upload">AUTO UPLOAD</string>
 	<string name="dfu_action_upload_cancel">CANCEL</string>
 	
 	<string name="dfu_settings_dfu">DFU options</string>

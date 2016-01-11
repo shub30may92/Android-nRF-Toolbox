@@ -115,7 +115,7 @@ public class DfuActivity extends AppCompatActivity implements LoaderCallbacks<Cu
 	private TextView mTextUploading;
 	private ProgressBar mProgressBar;
 
-	private Button mSelectFileButton, mUploadButton, mConnectButton;
+	private Button mSelectFileButton, mUploadButton, mAutoUploadButton , mConnectButton;
 
 	private BluetoothDevice mSelectedDevice;
 	private String mFilePath;
@@ -277,6 +277,7 @@ public class DfuActivity extends AppCompatActivity implements LoaderCallbacks<Cu
 		mSelectFileButton = (Button) findViewById(R.id.action_select_file);
 
 		mUploadButton = (Button) findViewById(R.id.action_upload);
+		mAutoUploadButton = (Button) findViewById(R.id.action_auto_upload);
 		mConnectButton = (Button) findViewById(R.id.action_connect);
 		mTextPercentage = (TextView) findViewById(R.id.textviewProgress);
 		mTextUploading = (TextView) findViewById(R.id.textviewUploading);
@@ -681,6 +682,39 @@ public class DfuActivity extends AppCompatActivity implements LoaderCallbacks<Cu
 			starter.setZip(mFileStreamUri, mFilePath);
 		else {
 			starter.setBinOrHex(mFileType, mFileStreamUri, mFilePath).setInitFile(mInitFileStreamUri, mInitFilePath);
+		}
+		starter.start(this, DfuService.class);
+	}
+
+	public void onAutoUploadClicked(final View view) {
+		if (isDfuServiceRunning()) {
+			showUploadCancelDialog();
+			return;
+		}
+
+		mStatusOk = true;
+		mFileType = 2;
+
+		// Save current state in order to restore it if user quit the Activity
+		final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		final SharedPreferences.Editor editor = preferences.edit();
+		editor.putString(PREFS_DEVICE_NAME, "Dfu");
+		editor.putString(PREFS_FILE_NAME, "bootloader.hex");
+		editor.putString(PREFS_FILE_TYPE, "Bootloader");
+		editor.putString(PREFS_FILE_SIZE, "39733 bytes");
+		editor.apply();
+
+		showProgressBar();
+
+		final boolean keepBond = preferences.getBoolean(SettingsFragment.SETTINGS_KEEP_BOND, false);
+
+		final DfuServiceInitiator starter = new DfuServiceInitiator("C5:5D:C9:99:1A:D9")
+				.setDeviceName("Dfu")
+				.setKeepBond(keepBond);
+		if (mFileType == DfuService.TYPE_AUTO)
+			starter.setZip(null, "/storage/emulated/0/Download/bootloader.hex");
+		else {
+			starter.setBinOrHex(2, null, "/storage/emulated/0/Download/bootloader.hex").setInitFile(null, "/storage/emulated/0/Download/init_bootloader.dat");
 		}
 		starter.start(this, DfuService.class);
 	}
